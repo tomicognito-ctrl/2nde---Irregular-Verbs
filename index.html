@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Révision des Verbes Irréguliers Anglais</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-indigo-50 via-slate-50 to-blue-100 min-h-screen text-slate-800 flex flex-col justify-between">
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-slate-200 py-4 px-6">
+        <div class="max-w-5xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <span class="bg-indigo-600 text-white p-2 rounded-xl text-xl font-bold shadow-md">2nde</span>
+                <div>
+                    <h1 class="text-xl font-bold text-slate-900">Irregular Verbs Master</h1>
+                    <p class="text-xs text-slate-500">Révisez vos verbes irréguliers efficacement</p>
+                </div>
+            </div>
+            <!-- 3 Onglets -->
+            <nav class="flex space-x-1 bg-slate-100 p-1 rounded-xl">
+                <button id="nav-random" onclick="switchTab('random')" class="px-4 py-2 text-sm font-semibold rounded-lg bg-white text-indigo-600 shadow-sm transition">Random Mode</button>
+                <button id="nav-base" onclick="switchTab('base')" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 transition">Verbal Base Mode</button>
+                <button id="nav-index" onclick="switchTab('index')" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 transition">Index Mode</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-4xl w-full mx-auto px-4 py-8 flex-grow">
+        
+        <!-- SECTION QUIZ (Utilisée pour Random Mode & Verbal Base Mode) -->
+        <div id="section-quiz" class="space-y-6">
+            <!-- Stats -->
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex justify-between items-center">
+                <div>
+                    <span id="current-mode-title" class="text-sm font-bold text-indigo-600 uppercase tracking-wide">Random Mode</span>
+                    <p class="text-xs text-slate-500" id="current-mode-desc">Un verbe et un indice aléatoires</p>
+                </div>
+                <div class="flex gap-4 text-center">
+                    <div class="bg-indigo-50 px-4 py-2 rounded-xl border border-indigo-100">
+                        <span class="block text-xs text-indigo-500 font-semibold uppercase">Score</span>
+                        <span id="stat-score" class="text-lg font-bold text-indigo-700">0</span>
+                    </div>
+                    <div class="bg-emerald-50 px-4 py-2 rounded-xl border border-emerald-100">
+                        <span class="block text-xs text-emerald-500 font-semibold uppercase">Série</span>
+                        <span id="stat-streak" class="text-lg font-bold text-emerald-700">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Carte de quiz sous forme de tableau -->
+            <div class="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden transition-all">
+                <div class="bg-indigo-600 px-6 py-4 text-white flex justify-between items-center">
+                    <span id="quiz-subtitle" class="text-sm font-medium tracking-wide opacity-90">Complétez les cases manquantes</span>
+                    <span id="verb-counter" class="text-xs bg-indigo-700 px-3 py-1 rounded-full font-semibold">Verbe #1</span>
+                </div>
+                
+                <form id="quiz-form" onsubmit="checkAnswer(event)" class="p-6 sm:p-8 space-y-6">
+                    
+                    <!-- Tableau de révision (1 ligne) -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                            <thead class="bg-slate-100 text-slate-600 uppercase text-xs">
+                                <tr>
+                                    <th class="p-3 border-b border-slate-200 font-semibold">Base Verbale</th>
+                                    <th class="p-3 border-b border-slate-200 font-semibold">Prétérit</th>
+                                    <th class="p-3 border-b border-slate-200 font-semibold">Participe Passé</th>
+                                    <th class="p-3 border-b border-slate-200 font-semibold">Français</th>
+                                </tr>
+                            </thead>
+                            <tbody id="quiz-table-row" class="bg-white text-sm">
+                                <!-- Rempli dynamiquement par JS -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Feedback message -->
+                    <div id="feedback-box" class="hidden p-4 rounded-xl text-sm font-medium"></div>
+
+                    <div class="flex justify-end gap-3 pt-2">
+                        <button type="submit" id="btn-submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-3 rounded-xl shadow-lg shadow-indigo-200 transition">
+                            Valider ma réponse
+                        </button>
+                        <button type="button" id="btn-next" onclick="nextQuestion()" class="hidden bg-slate-800 hover:bg-slate-900 text-white font-semibold px-6 py-3 rounded-xl shadow-md transition">
+                            Verbe suivant →
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- SECTION INDEX MODE (Glossaire) -->
+        <div id="section-index" class="hidden space-y-4">
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex flex-col sm:flex-row justify-between items-center gap-3">
+                <div>
+                    <h2 class="text-lg font-bold text-slate-800">Index Mode — Glossaire complet</h2>
+                    <p class="text-xs text-slate-500">Liste de tous les verbes irréguliers (87)</p>
+                </div>
+                <input type="text" id="search-input" onkeyup="filterGlossary()" placeholder="Rechercher un verbe..." class="bg-slate-50 border border-slate-300 text-sm rounded-xl px-4 py-2 w-full sm:w-64 outline-none focus:ring-2 focus:ring-indigo-500">
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="overflow-x-auto max-h-[600px]">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-slate-50 text-slate-500 uppercase text-xs sticky top-0 border-b border-slate-200">
+                            <tr>
+                                <th class="p-4 font-semibold">Base Verbale</th>
+                                <th class="p-4 font-semibold">Prétérit</th>
+                                <th class="p-4 font-semibold">Participe Passé</th>
+                                <th class="p-4 font-semibold">Français</th>
+                            </tr>
+                        </thead>
+                        <tbody id="glossary-tbody" class="divide-y divide-slate-100 text-sm">
+                            <!-- Populated via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center py-6 text-xs text-slate-400 border-t border-slate-200 bg-white/50 mt-10">
+        <p>Made by Thomas LANDRY - A list by M. MARILLAUD</p>
+        <p>Powered by GitHub & NetLify</p>
+    </footer>
+
+    <!-- Script Application -->
+    <script>
+        const verbsData = [
+            {"Verbal Base":"Be","Preterit":"Was/Were","Past Participe":"Been","French":"Être"},
+            {"Verbal Base":"Bear","Preterit":"Bore","Past Participe":"Born","French":"Porter/Supporter"},
+            {"Verbal Base":"Beat","Preterit":"Beat","Past Participe":"Beaten","French":"Battre"},
+            {"Verbal Base":"Become","Preterit":"Became","Past Participe":"Become","French":"Devenir"},
+            {"Verbal Base":"Begin","Preterit":"Began","Past Participe":"Begun","French":"Commencer"},
+            {"Verbal Base":"Bet","Preterit":"Bet","Past Participe":"Bet","French":"Parier"},
+            {"Verbal Base":"Bite","Preterit":"Bit","Past Participe":"Bitten","French":"Mordre"},
+            {"Verbal Base":"Bleed","Preterit":"Bled","Past Participe":"Bled","French":"Saigner"},
+            {"Verbal Base":"Blow","Preterit":"Blew","Past Participe":"Blown","French":"Souffler"},
+            {"Verbal Base":"Break","Preterit":"Broke","Past Participe":"Broken","French":"Casser"},
+            {"Verbal Base":"Bring","Preterit":"Brought","Past Participe":"Brought","French":"Apporter"},
+            {"Verbal Base":"Build","Preterit":"Built","Past Participe":"Built","French":"Construire"},
+            {"Verbal Base":"Burn","Preterit":"Burnt","Past Participe":"Burnt","French":"Brûler"},
+            {"Verbal Base":"Buy","Preterit":"Bought","Past Participe":"Bought","French":"Acheter"},
+            {"Verbal Base":"Catch","Preterit":"Caught","Past Participe":"Caught","French":"Attraper"},
+            {"Verbal Base":"Choose","Preterit":"Chose","Past Participe":"Chosen","French":"Choisir"},
+            {"Verbal Base":"Come","Preterit":"Came","Past Participe":"Come","French":"Venir"},
+            {"Verbal Base":"Cost","Preterit":"Cost","Past Participe":"Cost","French":"Coûter"},
+            {"Verbal Base":"Cut","Preterit":"Cut","Past Participe":"Cut","French":"Couper"},
+            {"Verbal Base":"Deal","Preterit":"Dealt","Past Participe":"Dealt","French":"Distribuer"},
+            {"Verbal Base":"Do","Preterit":"Did","Past Participe":"Done","French":"Faire"},
+            {"Verbal Base":"Draw","Preterit":"Drew","Past Participe":"Drawn","French":"Dessiner"},
+            {"Verbal Base":"Drink","Preterit":"Drank","Past Participe":"Drunk","French":"Boire"},
+            {"Verbal Base":"Drive","Preterit":"Drove","Past Participe":"Driven","French":"Conduire"},
+            {"Verbal Base":"Eat","Preterit":"Ate","Past Participe":"Eaten","French":"Manger"},
+            {"Verbal Base":"Fall","Preterit":"Fell","Past Participe":"Fallen","French":"Tomber"},
+            {"Verbal Base":"Feed","Preterit":"Fed","Past Participe":"Fed","French":"Nourrir"},
+            {"Verbal Base":"Feel","Preterit":"Felt","Past Participe":"Felt","French":"Ressentir"},
+            {"Verbal Base":"Fight","Preterit":"Fought","Past Participe":"Fought","French":"Combattre"},
+            {"Verbal Base":"Find","Preterit":"Found","Past Participe":"Found","French":"Trouver"},
+            {"Verbal Base":"Fly","Preterit":"Flew","Past Participe":"Flown","French":"Voler (dans les airs)"},
+            {"Verbal Base":"Forbid","Preterit":"Forbade","Past Participe":"Forbidden","French":"Interdire"},
+            {"Verbal Base":"Forget","Preterit":"Forgot","Past Participe":"Forgotten","French":"Oublier"},
+            {"Verbal Base":"Get","Preterit":"Got","Past Participe":"Got","French":"Obtenir"},
+            {"Verbal Base":"Give","Preterit":"Gave","Past Participe":"Given","French":"Donner"},
+            {"Verbal Base":"Go","Preterit":"Went","Past Participe":"Gone","French":"Aller"},
+            {"Verbal Base":"Grow","Preterit":"Grew","Past Participe":"Grown","French":"Grandir"},
+            {"Verbal Base":"Have","Preterit":"Had","Past Participe":"Had","French":"Avoir"},
+            {"Verbal Base":"Hear","Preterit":"Heard","Past Participe":"Heard","French":"Entendre"},
+            {"Verbal Base":"Hide","Preterit":"Hid","Past Participe":"Hidden","French":"Cacher"},
+            {"Verbal Base":"Hit","Preterit":"Hit","Past Participe":"Hit","French":"Taper"},
+            {"Verbal Base":"Hold","Preterit":"Held","Past Participe":"Held","French":"Tenir"},
+            {"Verbal Base":"Hurt","Preterit":"Hurt","Past Participe":"Hurt","French":"Blesser"},
+            {"Verbal Base":"Keep","Preterit":"Kept","Past Participe":"Kept","French":"Garder"},
+            {"Verbal Base":"Know","Preterit":"Knew","Past Participe":"Known","French":"Savoir"},
+            {"Verbal Base":"Learn","Preterit":"Learnt","Past Participe":"Learnt","French":"Apprendre"},
+            {"Verbal Base":"Leave","Preterit":"Left","Past Participe":"Left","French":"Partir"},
+            {"Verbal Base":"Lend","Preterit":"Lent","Past Participe":"Lent","French":"Prêter"},
+            {"Verbal Base":"Let","Preterit":"Let","Past Participe":"Let","French":"Laisser"},
+            {"Verbal Base":"Lie","Preterit":"Lay","Past Participe":"Lain","French":"Etendre"},
+            {"Verbal Base":"Lose","Preterit":"Lost","Past Participe":"Lost","French":"Perdre"},
+            {"Verbal Base":"Make","Preterit":"Made","Past Participe":"Made","French":"Faire (fabriquer)"},
+            {"Verbal Base":"Mean","Preterit":"Meant","Past Participe":"Meant","French":"Signifier"},
+            {"Verbal Base":"Meet","Preterit":"Met","Past Participe":"Met","French":"Rencontrer"},
+            {"Verbal Base":"Pay","Preterit":"Paid","Past Participe":"Paid","French":"Payer"},
+            {"Verbal Base":"Put","Preterit":"Put","Past Participe":"Put","French":"Mettre"},
+            {"Verbal Base":"Read","Preterit":"Read","Past Participe":"Read","French":"Lire"},
+            {"Verbal Base":"Ride","Preterit":"Rode","Past Participe":"Ridden","French":"Monter à cheval"},
+            {"Verbal Base":"Ring","Preterit":"Rang","Past Participe":"Rung","French":"Sonner"},
+            {"Verbal Base":"Run","Preterit":"Ran","Past Participe":"Run","French":"Courir"},
+            {"Verbal Base":"Say","Preterit":"Said","Past Participe":"Said","French":"Dire"},
+            {"Verbal Base":"See","Preterit":"Saw","Past Participe":"Seen","French":"Voir"},
+            {"Verbal Base":"Sell","Preterit":"Sold","Past Participe":"Sold","French":"Vendre"},
+            {"Verbal Base":"Send","Preterit":"Sent","Past Participe":"Sent","French":"Envoyer"},
+            {"Verbal Base":"Shake","Preterit":"Shook","Past Participe":"Shaken","French":"Secouer"},
+            {"Verbal Base":"Shine","Preterit":"Shone","Past Participe":"Shone","French":"Briller"},
+            {"Verbal Base":"Show","Preterit":"Showed","Past Participe":"Shown","French":"Montrer"},
+            {"Verbal Base":"Sing","Preterit":"Sang","Past Participe":"Sung","French":"Chanter"},
+            {"Verbal Base":"Sit","Preterit":"Sat","Past Participe":"Sat","French":"S'asseoir"},
+            {"Verbal Base":"Sleep","Preterit":"Slept","Past Participe":"Slept","French":"Dormir"},
+            {"Verbal Base":"Speak","Preterit":"Spoke","Past Participe":"Spoken","French":"Parler"},
+            {"Verbal Base":"Spend","Preterit":"Spent","Past Participe":"Spent","French":"Dépenser"},
+            {"Verbal Base":"Stand","Preterit":"Stood","Past Participe":"Stood","French":"Se tenir debout"},
+            {"Verbal Base":"Steal","Preterit":"Stole","Past Participe":"Stolen","French":"Voler (dérober)"},
+            {"Verbal Base":"Stick","Preterit":"Stuck","Past Participe":"Stuck","French":"Coller"},
+            {"Verbal Base":"Strike","Preterit":"Struck","Past Participe":"Struck","French":"Frapper"},
+            {"Verbal Base":"Swim","Preterit":"Swam","Past Participe":"Swum","French":"Nager"},
+            {"Verbal Base":"Take","Preterit":"Took","Past Participe":"Taken","French":"Prendre"},
+            {"Verbal Base":"Teach","Preterit":"Taught","Past Participe":"Taught","French":"Enseigner"},
+            {"Verbal Base":"Tell","Preterit":"Told","Past Participe":"Told","French":"Dire"},
+            {"Verbal Base":"Think","Preterit":"Thought","Past Participe":"Thought","French":"Penser"},
+            {"Verbal Base":"Throw","Preterit":"Threw","Past Participe":"Thrown","French":"Jeter"},
+            {"Verbal Base":"Understand","Preterit":"Understood","Past Participe":"Understood","French":"Comprendre"},
+            {"Verbal Base":"Wake","Preterit":"Woke","Past Participe":"Woken","French":"(Se) réveiller"},
+            {"Verbal Base":"Wear","Preterit":"Wore","Past Participe":"Worn","French":"Porter (vêtements)"},
+            {"Verbal Base":"Win","Preterit":"Won","Past Participe":"Won","French":"Gagner"},
+            {"Verbal Base":"Write","Preterit":"Wrote","Past Participe":"Written","French":"Écrire"}
+        ];
+
+        let currentVerb = {};
+        let currentKnownField = '';
+        let currentActiveMode = 'random'; // 'random', 'base', 'index'
+        let score = 0;
+        let streak = 0;
+        let questionCount = 0;
+        let answered = false;
+
+        const fields = ['Verbal Base', 'Preterit', 'Past Participe', 'French'];
+
+        function switchTab(mode) {
+            currentActiveMode = mode;
+            const quizSec = document.getElementById('section-quiz');
+            const indexSec = document.getElementById('section-index');
+            
+            const btnRandom = document.getElementById('nav-random');
+            const btnBase = document.getElementById('nav-base');
+            const btnIndex = document.getElementById('nav-index');
+
+            // Reset classes
+            const activeClass = "px-4 py-2 text-sm font-semibold rounded-lg bg-white text-indigo-600 shadow-sm transition";
+            const inactiveClass = "px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 transition";
+
+            btnRandom.className = inactiveClass;
+            btnBase.className = inactiveClass;
+            btnIndex.className = inactiveClass;
+
+            if (mode === 'index') {
+                quizSec.classList.add('hidden');
+                indexSec.classList.remove('hidden');
+                btnIndex.className = activeClass;
+                renderGlossary();
+            } else {
+                quizSec.classList.remove('hidden');
+                indexSec.classList.add('hidden');
+                if (mode === 'random') {
+                    btnRandom.className = activeClass;
+                    document.getElementById('current-mode-title').innerText = "Random Mode";
+                    document.getElementById('current-mode-desc').innerText = "Un verbe et un indice aléatoires";
+                } else {
+                    btnBase.className = activeClass;
+                    document.getElementById('current-mode-title').innerText = "Verbal Base Mode";
+                    document.getElementById('current-mode-desc').innerText = "La base verbale est toujours l'indice connu";
+                }
+                resetQuiz();
+            }
+        }
+
+        function resetQuiz() {
+            score = 0;
+            streak = 0;
+            questionCount = 0;
+            updateStats();
+            nextQuestion();
+        }
+
+        function nextQuestion() {
+            answered = false;
+            questionCount++;
+            document.getElementById('verb-counter').innerText = `Verbe #${questionCount}`;
+            
+            const feedbackBox = document.getElementById('feedback-box');
+            feedbackBox.classList.add('hidden');
+            feedbackBox.className = "hidden p-4 rounded-xl text-sm font-medium";
+
+            document.getElementById('btn-submit').classList.remove('hidden');
+            document.getElementById('btn-next').classList.add('hidden');
+
+            currentVerb = verbsData[Math.floor(Math.random() * verbsData.length)];
+
+            if (currentActiveMode === 'random') {
+                currentKnownField = fields[Math.floor(Math.random() * fields.length)];
+            } else {
+                currentKnownField = 'Verbal Base';
+            }
+
+            const rowContainer = document.getElementById('quiz-table-row');
+            rowContainer.innerHTML = '';
+
+            const tr = document.createElement('tr');
+            tr.className = "divide-x divide-slate-200";
+
+            fields.forEach(field => {
+                const td = document.createElement('td');
+                td.className = "p-3";
+
+                if (field === currentKnownField) {
+                    td.className += " bg-indigo-50/50";
+                    td.innerHTML = `
+                        <div class="flex flex-col">
+                            <span class="text-[10px] font-bold text-indigo-600 uppercase mb-1">Indice</span>
+                            <span class="font-bold text-indigo-900 text-base px-2 py-1">${currentVerb[field]}</span>
+                        </div>
+                    `;
+                } else {
+                    td.innerHTML = `
+                        <div class="flex flex-col">
+                            <span class="text-[10px] font-semibold text-slate-400 uppercase mb-1">À remplir</span>
+                            <input type="text" name="${field}" autocomplete="off" placeholder="Réponse..." 
+                                class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-800 outline-none focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
+                        </div>
+                    `;
+                }
+                tr.appendChild(td);
+            });
+
+            rowContainer.appendChild(tr);
+
+            setTimeout(() => {
+                const firstInput = rowContainer.querySelector('input');
+                if (firstInput) firstInput.focus();
+            }, 100);
+        }
+
+        function checkAnswer(e) {
+            e.preventDefault();
+            if (answered) return;
+            answered = true;
+
+            const form = document.getElementById('quiz-form');
+            let allCorrect = true;
+            let resultsSummary = [];
+
+            fields.forEach(field => {
+                if (field === currentKnownField) return;
+                const input = form.elements[field];
+                const userVal = input.value.trim().toLowerCase();
+                const correctValRaw = currentVerb[field];
+                const correctOptions = correctValRaw.toLowerCase().split(/[\/,]/).map(s => s.trim());
+
+                if (correctOptions.includes(userVal)) {
+                    input.classList.remove('border-slate-300', 'bg-slate-50');
+                    input.classList.add('border-emerald-500', 'bg-emerald-50', 'text-emerald-900', 'font-semibold');
+                } else {
+                    allCorrect = false;
+                    input.classList.remove('border-slate-300', 'bg-slate-50');
+                    input.classList.add('border-rose-500', 'bg-rose-50', 'text-rose-900', 'font-semibold');
+                    resultsSummary.push(`<strong>${field}</strong> attendu : <span class="underline">${correctValRaw}</span>`);
+                }
+                input.disabled = true;
+            });
+
+            const feedbackBox = document.getElementById('feedback-box');
+            feedbackBox.classList.remove('hidden');
+
+            if (allCorrect) {
+                score += 10;
+                streak += 1;
+                feedbackBox.className = "p-4 rounded-xl text-sm font-medium bg-emerald-100 text-emerald-800 border border-emerald-200";
+                feedbackBox.innerHTML = "🎉 <strong>Excellente réponse !</strong> C'est un sans-faute.";
+            } else {
+                streak = 0;
+                feedbackBox.className = "p-4 rounded-xl text-sm font-medium bg-rose-100 text-rose-800 border border-rose-200";
+                feedbackBox.innerHTML = `❌ <strong>Dommage !</strong> Voici les bonnes réponses :<br>` + resultsSummary.join('<br>');
+            }
+
+            updateStats();
+            document.getElementById('btn-submit').classList.add('hidden');
+            document.getElementById('btn-next').classList.remove('hidden');
+            document.getElementById('btn-next').focus();
+        }
+
+        function updateStats() {
+            document.getElementById('stat-score').innerText = score;
+            document.getElementById('stat-streak').innerText = streak;
+        }
+
+        function renderGlossary() {
+            const tbody = document.getElementById('glossary-tbody');
+            tbody.innerHTML = '';
+            verbsData.forEach(v => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition";
+                tr.innerHTML = `
+                    <td class="p-4 font-semibold text-indigo-600">${v['Verbal Base']}</td>
+                    <td class="p-4 text-slate-700">${v['Preterit']}</td>
+                    <td class="p-4 text-slate-700">${v['Past Participe']}</td>
+                    <td class="p-4 text-slate-600">${v['French']}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function filterGlossary() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            const rows = document.querySelectorAll('#glossary-tbody tr');
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                row.style.display = text.includes(query) ? '' : 'none';
+            });
+        }
+
+        window.onload = () => {
+            switchTab('random');
+        };
+    </script>
+</body>
+</html>
